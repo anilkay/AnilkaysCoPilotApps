@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="CommitMessageGenerator/CommitMessageGenerator.csproj" Id="f7a6879e-d40d-49d6-b65f-5b91d734be97" />
   <Project Path="SQLToObject/SQLToObject.csproj" />
 </Solution>
