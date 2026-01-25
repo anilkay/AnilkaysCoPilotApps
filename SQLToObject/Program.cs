@@ -2,9 +2,8 @@ using GitHub.Copilot.SDK;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
+using Refractored.GitHub.Copilot.SDK.Helpers;
 using System.ComponentModel;
-using System.Data.Common;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -117,10 +116,14 @@ Requirements:
 - Return ONLY the JSON array, no additional text""";
 
 
+var model = await ModelSelector.SelectModelAsync();
+
+
+
 await using var client = new CopilotClient();
 await using var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Model = "gpt-5-mini",
+    Model = model ?? "gpt-5-mini",
     Streaming = false,
     Tools = [getTables]
 });
