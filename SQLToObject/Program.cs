@@ -2,16 +2,13 @@ using GitHub.Copilot.SDK;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using Refractored.GitHub.Copilot.SDK.Helpers;
+using CopilotApps.Shared;
 using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 // Build configuration
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .Build();
+var configuration = AppConfiguration.LoadAppSettings();
 
 
 var connectionString = configuration.GetConnectionString("DefaultConnection");
@@ -116,7 +113,7 @@ Requirements:
 - Return ONLY the JSON array, no additional text""";
 
 
-var model = await ModelSelector.SelectModelAsync();
+var model = await ModelSelection.SelectModelAsync();
 
 
 
@@ -131,7 +128,7 @@ await using var session = await client.CreateSessionAsync(new SessionConfig
 var sendAndWait=await session.SendAndWaitAsync( new MessageOptions()
 {
     Prompt = prompt,
-});
+}, TimeSpan.FromMinutes(4));
 
 if(sendAndWait is null)
 {
@@ -149,20 +146,4 @@ if (entities is null || entities.Count == 0)
     return;
 }
 
-var entitiesDir = "Entities";
-Directory.CreateDirectory(entitiesDir);
-
-
-foreach (var entity in entities)
-{
-var filePath = $"Entities/{entity.TableName}.cs";
-await File.WriteAllTextAsync(filePath, entity.EntityContent);
-}
-
-class EntityTemplate
-{
-    [JsonPropertyName("tableName")]
-    public  string? TableName { get; set; }
-    [JsonPropertyName("entityContent")]
-    public  string? EntityContent { get; set; }
-}
+await EntityFileWriter.WriteEntitiesAsync(entities);

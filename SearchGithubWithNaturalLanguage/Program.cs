@@ -1,18 +1,13 @@
+using CopilotApps.Shared;
 using GitHub.Copilot.SDK;
-using Refractored.GitHub.Copilot.SDK.Helpers;
 using System.Text.Json;
-using System.Text;
 
-var model = await ModelSelector.SelectModelAsync();
+var model = await ModelSelection.SelectModelAsync();
 await using var client = new CopilotClient();
 
 Console.WriteLine("GitHub Search - Natural Language Search");
-Console.Write("Describe what you want to search for on GitHub: ");
-var userInput = Console.ReadLine();
-
-if (string.IsNullOrWhiteSpace(userInput))
+if (!ConsoleInput.TryReadRequired("Describe what you want to search for on GitHub: ", "Error: Please enter a valid search query.", out var userInput))
 {
-    Console.WriteLine("Error: Please enter a valid search query.");
     return;
 }
 
@@ -58,32 +53,12 @@ Console.WriteLine(response?.Data.Content);
 try
 {
     var jsonContent = response?.Data.Content?.Trim();
-    if (!string.IsNullOrWhiteSpace(jsonContent))
+    var headers = new[] { "repoName", "repolang", "repo_address" };
+    var csvFileName = await CsvWriter.WriteDictionaryCsvFromJsonAsync(jsonContent, headers, "github_search_results");
+
+    if (!string.IsNullOrWhiteSpace(csvFileName))
     {
-        var repositories = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(jsonContent);
-        
-        if (repositories != null && repositories.Count > 0)
-        {
-            var csvFileName = $"github_search_results_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
-            
-            using (var writer = new StreamWriter(csvFileName, false, Encoding.UTF8))
-            {
-                // Write header
-                writer.WriteLine("repoName,repolang,repo_address");
-                
-                // Write data rows
-                foreach (var repo in repositories)
-                {
-                    var repoName = repo.ContainsKey("repoName") ? EscapeCsv(repo["repoName"]) : "";
-                    var repolang = repo.ContainsKey("repolang") ? EscapeCsv(repo["repolang"]) : "";
-                    var repoAddress = repo.ContainsKey("repo_address") ? EscapeCsv(repo["repo_address"]) : "";
-                    
-                    writer.WriteLine($"{repoName},{repolang},{repoAddress}");
-                }
-            }
-            
-            Console.WriteLine($"\nResults written to CSV file: {csvFileName}");
-        }
+        Console.WriteLine($"\nResults written to CSV file: {csvFileName}");
     }
 }
 catch (JsonException ex)
@@ -93,17 +68,4 @@ catch (JsonException ex)
 catch (IOException ex)
 {
     Console.WriteLine($"Error writing to CSV file: {ex.Message}");
-}
-
-static string EscapeCsv(string value)
-{
-    if (string.IsNullOrEmpty(value))
-        return "\"\"";
-    
-    if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
-    {
-        return $"\"{value.Replace("\"", "\"\"")}\"";
-    }
-    
-    return value;
 }

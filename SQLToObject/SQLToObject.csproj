@@ -13,8 +13,11 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
-   <PackageReference Include="Refractored.GitHub.Copilot.SDK.Helpers" Version="1.0.2" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CopilotApps.Shared\CopilotApps.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

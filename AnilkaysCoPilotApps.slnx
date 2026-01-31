@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="CommitMessageGenerator/CommitMessageGenerator.csproj" Id="f7a6879e-d40d-49d6-b65f-5b91d734be97" />
+  <Project Path="CopilotApps.Shared/CopilotApps.Shared.csproj" />
   <Project Path="SearchFileSystemWithNaturalLanguage/SearchFileSystemWithNaturalLanguage.csproj" Id="cd95b90c-5cba-4867-80fc-a5c4834bdbbb" />
+  <Project Path="SearchGithubWithNaturalLanguage/SearchGithubWithNaturalLanguage.csproj" Id="483ec431-60aa-4683-ab76-5f23cfde20b7" />
   <Project Path="SQLToObject/SQLToObject.csproj" />
 </Solution>
