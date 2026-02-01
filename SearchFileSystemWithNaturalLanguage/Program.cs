@@ -1,4 +1,4 @@
-﻿//Not work as expected i don't know why.
+﻿//Not work as expected  i'm working on it.
 using CopilotApps.Shared;
 using GitHub.Copilot.SDK;
 
@@ -15,11 +15,10 @@ if (!ConsoleInput.TryReadRequired("Describe the files you want to search for: ",
     return;
 }
 
-var jsonExample = """{"query": "*.py", "max_results": 50, "sort_by": 6}""";
-
 var prompt = $"""
 You are a file search assistant. Analyze the user's natural language request and use the search the file system.
 You search entire file system based on the user's natural language query.
+Use MCP tool everything-search to perform the search.
 User's request: {userInput}
 Please analyze this request, call the MCP tool with appropriate parameters, and present the results to the user.
 return only the search results in your final answer. result contains file paths only.
@@ -29,12 +28,13 @@ await using var client = new CopilotClient();
 
 await using var session = await client.CreateSessionAsync(new SessionConfig
 {
-    Model = "GPT-5-mini",
+    Model = "GPT-5.2",
     Streaming = true,
-    SystemMessage= new SystemMessageConfig
+    ExcludedTools = ["view", "glob", "report_intent", "grep", "powershell", "task", "write_powershell", "create", "update_todo","read_powershell"],
+    SystemMessage = new SystemMessageConfig
     {
-        Mode = SystemMessageMode.Replace,
-        Content = "You are an assistant that helps users search for files on their local file system.r"
+        Mode = SystemMessageMode.Append,
+        Content = "You are an assistant that helps users search for files on their local file system. Use availble MCP server for this."
     },
     McpServers = new Dictionary<string, object>
     {
@@ -53,17 +53,7 @@ await using var session = await client.CreateSessionAsync(new SessionConfig
     }
 });
 
-session.On(ev =>
-{
-    if (ev is AssistantMessageDeltaEvent deltaEvent)
-    {
-        Console.Write(deltaEvent.Data.DeltaContent.ToString());
-    }
-    if (ev is SessionIdleEvent)
-    {
-        Console.WriteLine();
-    }
-});
+session.On(ev => SessionDebugLogger.EventHandler(ev));
 
 Console.WriteLine("\nSearching...\n");
 

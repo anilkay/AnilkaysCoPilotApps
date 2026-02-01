@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ChartGenerator/ChartGenerator.csproj" Id="3f512800-ba41-4b2e-9748-a20c735e744b" />
   <Project Path="CommitMessageGenerator/CommitMessageGenerator.csproj" Id="f7a6879e-d40d-49d6-b65f-5b91d734be97" />
   <Project Path="CopilotApps.Shared/CopilotApps.Shared.csproj" />
   <Project Path="SearchFileSystemWithNaturalLanguage/SearchFileSystemWithNaturalLanguage.csproj" Id="cd95b90c-5cba-4867-80fc-a5c4834bdbbb" />
