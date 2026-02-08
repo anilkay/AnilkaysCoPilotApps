@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitHub.Copilot.SDK" Version="0.1.23" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CopilotApps.Shared\CopilotApps.Shared.csproj" />
   </ItemGroup>
 
